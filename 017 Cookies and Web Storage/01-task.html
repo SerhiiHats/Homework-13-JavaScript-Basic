@@ -21,25 +21,24 @@
             Добавьте возможность сохранить выбранный цвет страницы в cookies сроком на 1 неделю.
             Добавьте восстановление выбранного цвета из cookies, если они есть, после загрузки документа.
         */
-        // window.addEventListener("load", () => {
-            let cookie = document.cookie;
-            let isPresentCookie = cookie.indexOf("selectedColor=");
-            if (isPresentCookie !== -1) {
-                let start = isPresentCookie + "selectedColor=".length;
-                let end = document.cookie.indexOf(";", start);
-                if (end === -1) {
-                    end = document.cookie.length;
-                }
-                let color = document.cookie.substring(start, end);
-                document.body.style.backgroundColor = color;
-                document.querySelector(`input[value="${color}"]`).checked = true;
+        let myCookies = document.cookie;
+        let isPresentCookie = myCookies.indexOf("selectedColor=");
+        if (isPresentCookie !== -1) {
+            let start = isPresentCookie + "selectedColor=".length;
+            let end = myCookies.indexOf(";", start);
+            if (end === -1) {
+                end = myCookies.length;
             }
-   
+            let color = myCookies.substring(start, end);
+            document.body.style.backgroundColor = color;
+            document.querySelector(`input[value="${color}"]`).checked = true;
+        }
+
         document.querySelector("#saveButton").addEventListener("click", function () {
             const form = document.forms[0];
             let selectedColor = form.color.value;
             document.body.style.backgroundColor = selectedColor;
-            document.cookie = "selectedColor=" + selectedColor + ";" + "max-age=604800;";           
+            document.cookie = "selectedColor=" + selectedColor + ";" + "max-age=604800;";
         });
 
     </script>
