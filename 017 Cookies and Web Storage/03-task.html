@@ -16,6 +16,32 @@
             width: 75px;
             display: inline-block;
         }
+
+        #btn-getAll{
+            margin: 5px;
+        }
+
+        #tableKeyValue {
+            margin: 10px;
+            border: black 2px solid;
+            border-collapse: collapse;
+            box-shadow: 0 0 5px 3px grey;
+        }
+
+        #tableKeyValue td {
+            border: black 1px solid;
+            padding: 7px;
+        }
+
+        #tableKeyValue tr:hover {
+            background: lightgrey;
+            text-shadow: 1px 1px 2px grey;
+            box-shadow: 2px 2px 7px 3px grey;
+        }
+
+        #tableKeyValue tr:active {
+            box-shadow: none;
+        }
     </style>
 </head>
 
@@ -47,6 +73,10 @@
             <input type="submit" value="Чтение">
         </div>
     </form>
+    <button id="btn-getAll">Показать все</button>
+    <button id="btn-clearAll">Очистить localStorage</button>
+    <table id="tableKeyValue">
+    </table>
 
     <script>
         /*
@@ -63,7 +93,7 @@
             let key = form.keyInput.value;
             let value = form.valueInput.value;
 
-            localStorage.setItem(key, value); 
+            localStorage.setItem(key, value);
             form.reset();
         });
 
@@ -73,8 +103,31 @@
             const form = document.forms.readForm;
             let key = form.keyInput.value;
 
-            let value = localStorage.getItem(key); 
+            let value = localStorage.getItem(key);
             alert(value);
+        });
+
+        let elemTableKeyValue = document.querySelector("#tableKeyValue");
+
+        document.querySelector("#btn-clearAll").addEventListener("click", function () {
+            localStorage.clear();
+            elemTableKeyValue.textContent = "";
+        });
+
+        document.querySelector("#btn-getAll").addEventListener("click", function () {
+            elemTableKeyValue.textContent = "";
+
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                let value = localStorage.getItem(key);
+                addTableKeyValue(key, value);
+            }
+
+            function addTableKeyValue(key, value) {
+                let elemTr = document.createElement("tr");
+                elemTr.insertAdjacentHTML("beforeend", `<td>${key}</td><td>${value}</td>`);
+                elemTableKeyValue.append(elemTr);
+            }
         });
     </script>
 </body>
