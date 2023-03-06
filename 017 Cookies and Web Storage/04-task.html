@@ -195,6 +195,12 @@
             }
         ];
 
+        console.log(localStorage.getItem("users"))
+        if (localStorage.getItem(users)){
+            users1 = JSON.parse(localStorage.getItem("users"))
+        } 
+
+        // let jsonStringOfUser = JSON.stringify(users);
         // класс для вывода информации в UL
         class ListService {
             selectedData;
