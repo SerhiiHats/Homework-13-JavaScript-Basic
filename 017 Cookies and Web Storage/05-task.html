@@ -117,11 +117,11 @@
 
         class TasksListView {
             element;
-            dataService;
+            // dataService;
 
             constructor(element) {
                 this.element = element;
-                dataService = dataService;
+                // dataService = dataService;
             }
 
             #drawList(tasksElements) {
@@ -152,6 +152,21 @@
                     taskElements.push(new TaskView(task))
                 });
                 this.#drawList(taskElements);
+            }
+            //читаем все задания с розметки и создаем новый массив заданий
+            readAll() {
+                let newArrayTasks = [];
+                let allElemDivWithTask = document.querySelectorAll(".task");
+                console.log(allElemDivWithTask)
+                allElemDivWithTask.forEach(elem => {
+                    console.log(elem.querySelector("p").textContent);
+                    console.log(elem.classList.contains("completed"));
+
+                    let task = new Task(elem.querySelector("p").textContent);
+                    task.isDone = elem.classList.contains("completed");
+                    newArrayTasks.push(task);
+                });
+                console.log(newArrayTasks);
             }
         }
 
@@ -232,6 +247,11 @@
         function showNotCompletedHandler() {
             tasksListView.drawNotCompleted();
         }
+
+        window.addEventListener("load", function () {
+            tasksListView.readAll();
+        });
+
     </script>
 </body>
 
