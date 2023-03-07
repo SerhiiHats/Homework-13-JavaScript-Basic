@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task 04</title><style>
+    <title>Task 04</title>
+    <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
@@ -50,6 +51,14 @@
         .form-group input {
             width: 200px;
         }
+
+        .form-group input:valid {
+            border: 1px solid green;
+        }
+
+        .form-group input:invalid {
+            border: 1px solid red;
+        }
     </style>
 </head>
 
@@ -72,7 +81,7 @@
         </div>
         <div class="form-group">
             <label for="balance">Баланс</label>
-            <input type="number" name="balance" id="balance" required min="1000">
+            <input type="text" name="balance" id="balance" pattern="\d{4,}(\.\d\d)?" min="1000" required>
         </div>
         <div class="form-group">
             <label for="email">Email</label>
@@ -195,32 +204,21 @@
             }
         ];
 
-        console.log(localStorage.getItem("users"))
-        if (localStorage.getItem(users)){
-            users1 = JSON.parse(localStorage.getItem("users"))
-        } 
+        if (localStorage.getItem("users") !== null) {
+            users = JSON.parse(localStorage.getItem("users"))
+        }
 
-        // let jsonStringOfUser = JSON.stringify(users);
-        // класс для вывода информации в UL
         class ListService {
             selectedData;
             data;
             listElement;
+            displayFn;
 
             constructor(data, listElement, displayFn) {
                 this.data = data;
                 this.listElement = listElement;
-
-                for (let index = 0; index < data.length; index++) {
-                    const currentData = data[index];
-
-                    let li = document.createElement("li");
-                    li.textContent = displayFn(currentData);
-                    currentData.id = index; // для каждого пользователя указываем id, который совпадает с id в разметке
-                    li.dataset.id = index;
-
-                    this.listElement.append(li);
-                }
+                this.displayFn = displayFn;
+                this.createAllViewLi();
             }
 
             select(id) {
@@ -244,7 +242,26 @@
                 if (index != -1) {
                     this.listElement.children[index].remove();
                     this.data.splice(index, 1);
+                    this.saveJsonData();
                 }
+            }
+
+            createAllViewLi() {
+                this.listElement.textContent = "";
+                for (let index = 0; index < this.data.length; index++) {
+                    const currentData = this.data[index];
+                    let li = document.createElement("li");
+                    li.textContent = this.displayFn(currentData);
+                    currentData.id = index; // для каждого пользователя указываем id, который совпадает с id в разметке
+                    li.dataset.id = index;
+
+                    this.listElement.append(li);
+                }
+            }
+
+            saveJsonData() {
+                let jsonData = JSON.stringify(this.data);
+                localStorage.setItem("users", jsonData);
             }
         }
 
@@ -301,6 +318,8 @@
         document.forms[0].addEventListener("submit", function (e) {
             formService.saveForm();
             e.preventDefault();
+            listService.saveJsonData();
+            listService.createAllViewLi();
         });
 
         // удаляем и очищаем форму
@@ -308,6 +327,17 @@
             listService.deleteSelectedItem();
             formService.resetForm();
         });
+
+        // добавляем кастомное сообщение к валидации баланса в форме
+        document.forms[0].elements.balance.addEventListener("change", () => {
+            if (document.forms[0].elements.balance.validity.patternMismatch) {
+                document.forms[0].elements.balance.setCustomValidity(
+                    "Сумма баланса не менее 1000,\nдля отображения дробной части используйте точку (.)\nдробная часть числа должна состоять из двух цифр"
+                );
+            } else {
+                document.forms[0].elements.balance.setCustomValidity("");
+            }
+        })
     </script>
 </body>
 
