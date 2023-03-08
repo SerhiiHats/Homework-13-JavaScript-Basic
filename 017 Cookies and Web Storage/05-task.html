@@ -61,6 +61,11 @@
             padding-left: 4px;
             width: 68%;
         }
+
+        .btn-delete {
+            margin-left: auto;
+            padding: 0 2px;
+        }
     </style>
 </head>
 
@@ -78,7 +83,6 @@
     </div>
 
     <script>
-
         /*
         Задача, добавьте возможность удалять отдельные задачи в списке. Изменения должны сохраняться в localStorage
         */
@@ -101,6 +105,12 @@
                 return this.tasks.filter(task => task.isDone == false);
             },
 
+            //добавил метод инициализации нового массива заданий 
+            setNewTasks(newTasks) {
+                this.tasks = newTasks;
+                this.save();
+            },
+
             add(task) {
                 this.tasks.push(task);
                 this.save();
@@ -117,11 +127,9 @@
 
         class TasksListView {
             element;
-            // dataService;
 
             constructor(element) {
                 this.element = element;
-                // dataService = dataService;
             }
 
             #drawList(tasksElements) {
@@ -153,20 +161,17 @@
                 });
                 this.#drawList(taskElements);
             }
-            //читаем все задания с розметки и создаем новый массив заданий
-            readAll() {
+
+            //добавил метод для считывания всех заданий с розметки и создания нового массива заданий
+            readAllTasks() {
                 let newArrayTasks = [];
                 let allElemDivWithTask = document.querySelectorAll(".task");
-                console.log(allElemDivWithTask)
                 allElemDivWithTask.forEach(elem => {
-                    console.log(elem.querySelector("p").textContent);
-                    console.log(elem.classList.contains("completed"));
-
                     let task = new Task(elem.querySelector("p").textContent);
                     task.isDone = elem.classList.contains("completed");
                     newArrayTasks.push(task);
                 });
-                console.log(newArrayTasks);
+                return newArrayTasks;
             }
         }
 
@@ -187,8 +192,14 @@
                 let p = document.createElement("p");
                 p.innerText = this.task.text;
 
+                //добавил кнопку с удалением задачи
+                let button = document.createElement("button");
+                button.textContent = "удалить";
+                button.classList.add("btn-delete");
+
                 this.div.append(input);
                 this.div.append(p);
+                this.div.append(button);
 
                 if (this.task.isDone) {
                     this.div.classList.add("completed");
@@ -224,7 +235,16 @@
 
         taskNameInput.addEventListener("keydown", function (e) {
             if (e.code == "Enter") addTaskHandler();
-        })
+        });
+
+        //добавил обработчик события на клик по кнопке удалить
+        taskList.addEventListener("click", (e) => {
+            if (e.target.classList.contains("btn-delete")) {
+                e.target.parentElement.remove();
+                let newArrayTasks = tasksListView.readAllTasks();
+                dataService.setNewTasks(newArrayTasks);
+            }
+        });
 
         function addTaskHandler() {
             if (taskNameInput.value) {
@@ -247,11 +267,6 @@
         function showNotCompletedHandler() {
             tasksListView.drawNotCompleted();
         }
-
-        window.addEventListener("load", function () {
-            tasksListView.readAll();
-        });
-
     </script>
 </body>
 
